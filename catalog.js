@@ -34,8 +34,8 @@ const studioImages = new Set(
   Array.from({ length: 20 }, (_, index) => `HB-${index + 101}`)
 );
 
-function fabricImage(code) {
-  return `assets/images/catalog/${code}${studioImages.has(code) ? '-studio.png' : '.jpg'}`;
+function fabricImage(code, size = 'thumb') {
+  return `assets/images/catalog/${code}${studioImages.has(code) ? `-${size}.webp` : '.jpg'}`;
 }
 
 function renderCatalog() {
@@ -43,7 +43,9 @@ function renderCatalog() {
     const visible = activeFilter === 'all' || fabric.cat.split(' ').includes(activeFilter);
     const name = currentLanguage === 'am' ? fabric.am : fabric.en;
     const collection = currentLanguage === 'am' ? fabric.collectionAm : fabric.collection;
-    return `<article class="catalog-card${visible ? '' : ' is-hidden'}" data-index="${index}" tabindex="0"><div class="catalog-card-image"><img src="${fabricImage(fabric.code)}" alt="${name} curtain fabric" loading="lazy"><span>${fabric.code}</span></div><div class="catalog-card-copy"><div><p>${collection}</p><h3>${name}</h3></div><button type="button" aria-label="View ${name}">↗</button></div></article>`;
+    const loading = index < 4 ? 'eager' : 'lazy';
+    const priority = index < 4 ? 'high' : 'low';
+    return `<article class="catalog-card${visible ? '' : ' is-hidden'}" data-index="${index}" tabindex="0"><div class="catalog-card-image"><img src="${fabricImage(fabric.code)}" alt="${name} curtain fabric" width="720" height="960" loading="${loading}" fetchpriority="${priority}" decoding="async"><span>${fabric.code}</span></div><div class="catalog-card-copy"><div><p>${collection}</p><h3>${name}</h3></div><button type="button" aria-label="View ${name}">↗</button></div></article>`;
   }).join('');
   document.querySelectorAll('.catalog-card:not(.is-hidden)').forEach(card => {
     card.addEventListener('click', () => openDetail(Number(card.dataset.index)));
@@ -55,7 +57,7 @@ function openDetail(index) {
   const fabric = fabrics[index];
   const isAm = currentLanguage === 'am';
   const image = detailDialog.querySelector('img');
-  image.src = fabricImage(fabric.code);
+  image.src = fabricImage(fabric.code, 'detail');
   image.alt = `${isAm ? fabric.am : fabric.en} curtain fabric`;
   detailDialog.querySelector('.detail-code').textContent = fabric.code;
   detailDialog.querySelector('h2').textContent = isAm ? fabric.am : fabric.en;

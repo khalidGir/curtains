@@ -14,7 +14,7 @@ const amPolish={
   '.project-type:nth-child(2)>p:last-child':'ግላዊነትን የሚጠብቅ፣ የፀሐይ ነጸብራቅን የሚቀንስና ንጹህ የቢሮ ገጽታ የሚሰጥ መፍትሔ።',
   '.project-type:nth-child(3) h3':'ባለ ሁለት ንብርብር የአፓርታማ መጋረጃ',
   '.project-type:nth-child(3)>p:last-child':'ነጭ ሼርና ሞቅ ያለ ቡናማ መጋረጃ በማጣመር ለቤቱ ምቹና የተሟላ ገጽታ የሰጠ ስራ።',
-  '.delivery-heading .section-tag':'02 / ለትልቅ ፕሮጀክቶች',
+  '.delivery-heading .section-tag':'03 / ለትልቅ ፕሮጀክቶች',
   '.delivery-heading h2':'አንድ ቡድን።<br><em>ከመጀመሪያ እስከ መጨረሻ።</em>',
   '.project-cta h2':'ከመጀመሪያው <em>ያሳትፉን።</em>',
   '.project-cta>p:not(.section-tag)':'የፕሮጀክት ስዕል፣ የመስኮት ዝርዝር ወይም አጭር መግለጫ ያጋሩን። ተግባራዊና ውብ መፍትሔ አብረን እናዘጋጃለን።'
