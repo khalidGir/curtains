@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { supabase } = require('./db');
 
 const fabricIds = new Set(Array.from({ length: 20 }, (_, index) => `HB-${index + 101}`));
 const allowedFields = new Set(['fabricId', 'widthCm', 'heightCm', 'quantity']);
@@ -106,6 +107,25 @@ module.exports = function calculatePrice(req, res) {
     body.quantity * rules.beltHoldersPerWindow +
     installation
   );
+
+  // Log quote to database (fire and forget)
+  try {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+    const ip_hash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16);
+
+    supabase.from('quotes').insert({
+      fabric_code: fabricId,
+      width_cm: body.widthCm,
+      height_cm: body.heightCm,
+      quantity: body.quantity,
+      total_price: total,
+      currency: configuration.currency || 'ETB',
+      ip_hash,
+      user_agent: req.headers['user-agent']
+    }).then(() => {}).catch(() => {});
+  } catch (e) {
+    // Silently fail - don't break pricing for analytics
+  }
 
   return send(res, 200, { currency: configuration.currency || 'ETB', total, projectRequired: false });
 };

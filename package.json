@@ -1,0 +1,9 @@
+{
+  "name": "habiba-curtains",
+  "version": "1.0.0",
+  "description": "Habiba Curtains white-label platform",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.113.0"
+  }
+}

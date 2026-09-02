@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard - Habiba Curtains</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
+    .header { background: #1a1a2e; color: white; padding: 20px; }
+    .header h1 { font-size: 1.5rem; }
+    .header p { opacity: 0.7; font-size: 0.9rem; margin-top: 5px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .stat-card h3 { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: #1a1a2e; margin-top: 8px; }
+    .stat-card .change { font-size: 0.8rem; color: #22c55e; margin-top: 4px; }
+    .stat-card .change.negative { color: #ef4444; }
+    .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .section h2 { font-size: 1.1rem; margin-bottom: 16px; color: #1a1a2e; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+    th { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { font-size: 0.95rem; }
+    .fabric-code { font-family: monospace; background: #f0f0f0; padding: 4px 8px; border-radius: 4px; }
+    .partner-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+    .partner-ararat { background: #fef3c7; color: #92400e; }
+    .partner-habiba { background: #dbeafe; color: #1e40af; }
+    .refresh-btn { background: #1a1a2e; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+    .refresh-btn:hover { background: #2d2d4a; }
+    .loading { text-align: center; padding: 40px; color: #666; }
+    .chart-container { height: 200px; display: flex; align-items: flex-end; gap: 8px; padding: 20px 0; }
+    .chart-bar { flex: 1; background: linear-gradient(180deg, #6366f1, #4f46e5); border-radius: 4px 4px 0 0; min-height: 10px; position: relative; }
+    .chart-bar:hover { background: linear-gradient(180deg, #818cf8, #6366f1); }
+    .chart-label { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: #666; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+    .empty-state h3 { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Analytics Dashboard</h1>
+    <p>Habiba Curtains Platform - Real-time insights</p>
+  </div>
+  
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Quotes</h3>
+        <div class="value" id="total-quotes">-</div>
+        <div class="change" id="quotes-change"></div>
+      </div>
+      <div class="stat-card">
+        <h3>Today's Quotes</h3>
+        <div class="value" id="today-quotes">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Active Partners</h3>
+        <div class="value" id="active-partners">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Top Fabric</h3>
+        <div class="value" id="top-fabric" style="font-size:1.2rem">-</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2>Recent Quotes</h2>
+        <button class="refresh-btn" onclick="loadData()">Refresh</button>
+      </div>
+      <div id="quotes-table">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Quotes by Fabric</h2>
+      <div id="fabric-chart" class="chart-container">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Quotes by Partner</h2>
+      <div id="partner-stats">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let quotes = [];
+    let partners = [];
+
+    async function loadData() {
+      try {
+        // Fetch quotes
+        const quotesRes = await fetch(`${API_BASE}/api/quotes?limit=100`);
+        const quotesData = await quotesRes.json();
+        quotes = quotesData.quotes || [];
+
+        // Fetch partners
+        const partnersRes = await fetch(`${API_BASE}/api/partners?active=true`);
+        const partnersData = await partnersRes.json();
+        partners = partnersData.partners || [];
+
+        updateStats();
+        renderQuotesTable();
+        renderFabricChart();
+        renderPartnerStats();
+      } catch (err) {
+        console.error('Failed to load data:', err);
+        document.getElementById('quotes-table').innerHTML = '<div class="empty-state"><h3>Failed to load data</h3><p>Make sure the API is configured correctly.</p></div>';
+      }
+    }
+
+    function updateStats() {
+      const today = new Date().toISOString().split('T')[0];
+      const todayQuotes = quotes.filter(q => q.created_at && q.created_at.startsWith(today));
+      
+      document.getElementById('total-quotes').textContent = quotes.length;
+      document.getElementById('today-quotes').textContent = todayQuotes.length;
+      document.getElementById('active-partners').textContent = partners.length;
+
+      // Find top fabric
+      const fabricCounts = {};
+      quotes.forEach(q => {
+        fabricCounts[q.fabric_code] = (fabricCounts[q.fabric_code] || 0) + 1;
+      });
+      const topFabric = Object.entries(fabricCounts).sort((a, b) => b[1] - a[1])[0];
+      document.getElementById('top-fabric').textContent = topFabric ? topFabric[0] : '-';
+    }
+
+    function renderQuotesTable() {
+      if (quotes.length === 0) {
+        document.getElementById('quotes-table').innerHTML = '<div class="empty-state"><h3>No quotes yet</h3><p>Quotes will appear here once staff start using the calculator.</p></div>';
+        return;
+      }
+
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Fabric</th>
+              <th>Dimensions</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th>Partner</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${quotes.slice(0, 20).map(q => `
+              <tr>
+                <td>${new Date(q.created_at).toLocaleDateString()}</td>
+                <td><span class="fabric-code">${q.fabric_code}</span></td>
+                <td>${q.width_cm} × ${q.height_cm} cm</td>
+                <td>${q.quantity}</td>
+                <td>${q.total_price ? q.total_price.toLocaleString() + ' ' + (q.currency || 'ETB') : '-'}</td>
+                <td>${q.partner_id ? '<span class="partner-badge partner-ararat">Partner</span>' : '<span class="partner-badge partner-habiba">Habiba</span>'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('quotes-table').innerHTML = html;
+    }
+
+    function renderFabricChart() {
+      const fabricCounts = {};
+      quotes.forEach(q => {
+        fabricCounts[q.fabric_code] = (fabricCounts[q.fabric_code] || 0) + 1;
+      });
+
+      const sorted = Object.entries(fabricCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      if (sorted.length === 0) {
+        document.getElementById('fabric-chart').innerHTML = '<div class="loading">No data yet</div>';
+        return;
+      }
+
+      const maxCount = sorted[0][1];
+      const html = sorted.map(([code, count]) => {
+        const height = (count / maxCount) * 160;
+        return `<div class="chart-bar" style="height:${height}px" title="${code}: ${count} quotes"><span class="chart-label">${code.replace('HB-', '')}</span></div>`;
+      }).join('');
+      
+      document.getElementById('fabric-chart').innerHTML = html;
+      document.getElementById('fabric-chart').style.paddingBottom = '30px';
+    }
+
+    function renderPartnerStats() {
+      const partnerCounts = {};
+      quotes.forEach(q => {
+        const key = q.partner_id || 'habiba';
+        partnerCounts[key] = (partnerCounts[key] || 0) + 1;
+      });
+
+      if (Object.keys(partnerCounts).length === 0) {
+        document.getElementById('partner-stats').innerHTML = '<div class="loading">No data yet</div>';
+        return;
+      }
+
+      const html = Object.entries(partnerCounts).map(([id, count]) => {
+        const partner = partners.find(p => p.id === id);
+        const name = partner ? partner.name : 'Habiba Direct';
+        const pct = ((count / quotes.length) * 100).toFixed(1);
+        return `
+          <div style="display:flex; align-items:center; margin-bottom:12px;">
+            <div style="width:150px; font-weight:500;">${name}</div>
+            <div style="flex:1; background:#f0f0f0; border-radius:8px; height:24px; overflow:hidden;">
+              <div style="width:${pct}%; background:#6366f1; height:100%; border-radius:8px;"></div>
+            </div>
+            <div style="width:80px; text-align:right; font-size:0.9rem; color:#666;">${count} (${pct}%)</div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('partner-stats').innerHTML = html;
+    }
+
+    // Load data on page load
+    loadData();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>

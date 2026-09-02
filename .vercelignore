@@ -1,4 +1,9 @@
 pricing-admin.html
 pricing-admin.css
 pricing-admin.js
+qr-generator.html
+partner-onboarding.html
+partner-onboarding.js
+partner-template.html
+analytics.html
 *.private.json

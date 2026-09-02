@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>QR Code Generator — Habiba Curtains</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #27251f;
+      --paper: #f8f6f1;
+      --cream: #ebe5dc;
+      --rust: #9f5438;
+      --muted: #756f65;
+      --line: rgba(39, 37, 31, .17);
+      --serif: "Italiana", serif;
+      --sans: "DM Sans", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--cream); }
+    body { margin: 0; color: var(--ink); background: var(--cream); font-family: var(--sans); }
+    button, input { font: inherit; }
+
+    .header {
+      height: 76px;
+      padding: 0 max(5vw, env(safe-area-inset-left));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .brand { font: 600 12px var(--sans); letter-spacing: .16em; }
+    .badge { padding: 7px 9px; border: 1px solid rgba(255,255,255,.3); font-size: 8px; letter-spacing: .16em; }
+
+    .shell { width: min(100%, 760px); margin: auto; padding: 42px 5vw 50px; }
+    .intro > p { margin: 0; color: var(--rust); font-size: 9px; font-weight: 600; letter-spacing: .2em; }
+    .intro h1 { margin: 16px 0 13px; font: clamp(50px, 14vw, 82px)/.92 var(--serif); letter-spacing: -.04em; }
+    .intro h1 em { font-weight: 400; }
+    .intro > span { display: block; max-width: 560px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+    .form { display: grid; gap: 16px; margin-top: 34px; }
+    .card { padding: 24px; background: var(--paper); border: 1px solid var(--line); }
+    .card-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .card-heading span { display: grid; width: 29px; height: 29px; place-items: center; border-radius: 50%; background: var(--rust); color: white; font-size: 9px; }
+    .card-heading h2 { margin: 0; font: 27px var(--serif); }
+
+    label { display: flex; justify-content: space-between; margin: 0 0 9px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+    input, select { width: 100%; min-height: 58px; margin: 0 0 22px; padding: 0 16px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font-size: 18px; outline: none; }
+    input:focus, select:focus { border-color: var(--rust); box-shadow: 0 0 0 3px rgba(159,84,56,.12); }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23756f65' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; }
+
+    .generate-button { width: 100%; min-height: 66px; border: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--rust); color: white; font-size: 13px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
+    .generate-button span { font-size: 22px; }
+    .generate-button:disabled { opacity: .6; cursor: wait; }
+
+    .result { padding: 30px 24px; background: var(--ink); color: var(--paper); text-align: center; }
+    .result > span { font-size: 9px; letter-spacing: .18em; color: #d4a48d; }
+    .result-preview { margin: 20px auto; background: white; padding: 20px; display: inline-block; }
+    .result-preview canvas { display: block; }
+    .result-info { margin: 16px 0; color: #aaa397; font-size: 12px; line-height: 1.6; }
+
+    .download-button { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: var(--rust); color: white; border: 0; font-size: 12px; font-weight: 600; letter-spacing: .08em; cursor: pointer; text-decoration: none; margin-top: 16px; }
+    .download-button:hover { background: #8a4630; }
+
+    .presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+    .preset-card { padding: 16px; background: var(--paper); border: 1px solid var(--line); cursor: pointer; transition: border-color .2s; }
+    .preset-card:hover { border-color: var(--rust); }
+    .preset-card h3 { margin: 0 0 4px; font: 600 14px var(--sans); }
+    .preset-card p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    @media (min-width: 700px) {
+      .shell { padding-top: 64px; }
+      .card { padding: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">HABIBA CURTAINS</div>
+    <span class="badge">ADMIN TOOL</span>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <p>QR CODE GENERATOR</p>
+      <h1>Generate a <em>QR code.</em></h1>
+      <span>Create a QR code for partner showrooms. Customers scan it to browse the fabric catalogue.</span>
+    </section>
+
+    <form class="form" id="qr-form">
+      <section class="card">
+        <div class="card-heading"><span>01</span><h2>Partner details</h2></div>
+        <label for="partner-name">Partner name</label>
+        <input id="partner-name" type="text" required placeholder="e.g. Ararat Furniture">
+
+        <label for="catalogue-url">Catalogue URL</label>
+        <input id="catalogue-url" type="url" required placeholder="https://your-domain.vercel.app/ararat/">
+      </section>
+
+      <section class="card">
+        <div class="card-heading"><span>02</span><h2>QR settings</h2></div>
+        <label for="qr-size">Size</label>
+        <select id="qr-size">
+          <option value="200">Small (200px)</option>
+          <option value="400" selected>Medium (400px)</option>
+          <option value="600">Large (600px)</option>
+          <option value="800">Print (800px)</option>
+        </select>
+
+        <label for="qr-color">Foreground colour</label>
+        <input id="qr-color" type="color" value="#27251f" style="min-height: 58px; padding: 8px;">
+      </section>
+
+      <button class="generate-button" type="submit">Generate QR code <span>→</span></button>
+    </form>
+
+    <section class="result" id="qr-result" hidden>
+      <span>QR CODE READY</span>
+      <div class="result-preview" id="qr-preview"></div>
+      <p class="result-info" id="qr-info"></p>
+      <button class="download-button" id="download-btn">Download PNG ↓</button>
+    </section>
+
+    <section class="presets">
+      <div class="preset-card" data-name="Ararat Furniture" data-url="/ararat/">
+        <h3>Ararat Furniture</h3>
+        <p>/ararat/</p>
+      </div>
+      <div class="preset-card" data-name="Partner 2" data-url="/partner2/">
+        <h3>Partner 2</h3>
+        <p>/partner2/</p>
+      </div>
+      <div class="preset-card" data-name="Partner 3" data-url="/partner3/">
+        <h3>Partner 3</h3>
+        <p>/partner3/</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    const form = document.getElementById('qr-form');
+    const nameInput = document.getElementById('partner-name');
+    const urlInput = document.getElementById('catalogue-url');
+    const sizeSelect = document.getElementById('qr-size');
+    const colorInput = document.getElementById('qr-color');
+    const resultSection = document.getElementById('qr-result');
+    const preview = document.getElementById('qr-preview');
+    const info = document.getElementById('qr-info');
+    const downloadBtn = document.getElementById('download-btn');
+    let currentCanvas = null;
+
+    document.querySelectorAll('.preset-card').forEach(card => {
+      card.addEventListener('click', () => {
+        nameInput.value = card.dataset.name;
+        const baseUrl = window.location.origin;
+        urlInput.value = baseUrl + card.dataset.url;
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = urlInput.value.trim();
+      const size = parseInt(sizeSelect.value);
+      const color = colorInput.value;
+      const partner = nameInput.value.trim();
+
+      if (!url || !partner) return;
+
+      preview.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      preview.appendChild(canvas);
+
+      try {
+        await QRCode.toCanvas(canvas, url, {
+          width: size,
+          margin: 2,
+          color: { dark: color, light: '#ffffff' }
+        });
+        currentCanvas = canvas;
+        info.textContent = `${partner} · ${size}px · ${url}`;
+        resultSection.hidden = false;
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err) {
+        alert('Error generating QR code: ' + err.message);
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!currentCanvas) return;
+      const link = document.createElement('a');
+      const partner = nameInput.value.trim().toLowerCase().replace(/\s+/g, '-');
+      link.download = `${partner}-qr-code.png`;
+      link.href = currentCanvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Partner Onboarding — Habiba Curtains</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #27251f;
+      --paper: #f8f6f1;
+      --cream: #ebe5dc;
+      --rust: #9f5438;
+      --muted: #756f65;
+      --line: rgba(39, 37, 31, .17);
+      --serif: "Italiana", serif;
+      --sans: "DM Sans", sans-serif;
+      --success: #446347;
+      --error: #9b372e;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--cream); scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--cream); font-family: var(--sans); }
+    button, input, select { font: inherit; }
+
+    .header {
+      height: 76px;
+      padding: 0 max(5vw, env(safe-area-inset-left));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .brand { font: 600 12px var(--sans); letter-spacing: .16em; }
+    .badge { padding: 7px 9px; border: 1px solid rgba(255,255,255,.3); font-size: 8px; letter-spacing: .16em; }
+
+    .shell { width: min(100%, 960px); margin: auto; padding: 42px 5vw 50px; }
+    .intro > p { margin: 0; color: var(--rust); font-size: 9px; font-weight: 600; letter-spacing: .2em; }
+    .intro h1 { margin: 16px 0 13px; font: clamp(50px, 14vw, 82px)/.92 var(--serif); letter-spacing: -.04em; }
+    .intro h1 em { font-weight: 400; }
+    .intro > span { display: block; max-width: 560px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+    .steps { display: flex; gap: 8px; margin: 32px 0; }
+    .step-indicator { flex: 1; height: 4px; background: var(--line); border-radius: 2px; transition: background .3s; }
+    .step-indicator.active { background: var(--rust); }
+
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    .card { padding: 24px; background: var(--paper); border: 1px solid var(--line); margin-bottom: 16px; }
+    .card-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .card-heading span { display: grid; width: 29px; height: 29px; place-items: center; border-radius: 50%; background: var(--rust); color: white; font-size: 9px; }
+    .card-heading h2 { margin: 0; font: 27px var(--serif); }
+
+    label { display: flex; justify-content: space-between; margin: 0 0 9px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+    label small { font-size: inherit; }
+    input, select { width: 100%; min-height: 58px; margin: 0 0 22px; padding: 0 16px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font-size: 18px; outline: none; }
+    input:focus, select:focus { border-color: var(--rust); box-shadow: 0 0 0 3px rgba(159,84,56,.12); }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23756f65' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; }
+    input[type="color"] { min-height: 58px; padding: 8px; cursor: pointer; }
+    input[type="file"] { min-height: auto; padding: 16px; cursor: pointer; }
+
+    .slug-preview { padding: 12px 16px; background: var(--cream); border: 1px solid var(--line); font-size: 14px; color: var(--muted); margin-bottom: 22px; }
+    .slug-preview strong { color: var(--ink); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    .logo-upload { border: 2px dashed var(--line); padding: 32px; text-align: center; cursor: pointer; transition: border-color .2s; }
+    .logo-upload:hover { border-color: var(--rust); }
+    .logo-upload.has-logo { border-style: solid; border-color: var(--success); }
+    .logo-upload input { display: none; }
+    .logo-upload p { margin: 0; color: var(--muted); font-size: 13px; }
+    .logo-upload .logo-preview { max-width: 200px; max-height: 100px; margin: 16px auto 0; display: block; }
+
+    .nav-buttons { display: flex; gap: 12px; margin-top: 24px; }
+    .nav-buttons button { flex: 1; min-height: 58px; border: 0; cursor: pointer; font-size: 13px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
+    .btn-next { background: var(--rust); color: white; }
+    .btn-next:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-prev { background: transparent; border: 1px solid var(--line) !important; color: var(--ink); }
+    .btn-generate { background: var(--success); color: white; }
+    .btn-generate:disabled { opacity: .5; cursor: not-allowed; }
+
+    .preview-frame { background: white; border: 1px solid var(--line); padding: 20px; margin-top: 24px; }
+    .preview-frame iframe { width: 100%; height: 600px; border: none; }
+
+    .result { padding: 30px 24px; background: var(--ink); color: var(--paper); text-align: center; margin-top: 24px; }
+    .result > span { font-size: 9px; letter-spacing: .18em; color: #d4a48d; }
+    .result h2 { margin: 16px 0; font: 32px var(--serif); }
+    .result-info { color: #aaa397; font-size: 13px; line-height: 1.6; margin: 16px 0; }
+    .result-actions { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+    .result-actions a, .result-actions button { padding: 14px 28px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-decoration: none; cursor: pointer; border: 0; }
+    .btn-download { background: var(--rust); color: white; }
+    .btn-copy { background: transparent; border: 1px solid rgba(255,255,255,.3) !important; color: white; }
+
+    .partners-list { margin-top: 40px; }
+    .partners-list h3 { font: 24px var(--serif); margin: 0 0 16px; }
+    .partner-row { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--paper); border: 1px solid var(--line); margin-bottom: 8px; }
+    .partner-row img { width: 48px; height: 48px; object-fit: contain; }
+    .partner-row .info { flex: 1; }
+    .partner-row .info strong { display: block; font-size: 15px; }
+    .partner-row .info small { color: var(--muted); font-size: 12px; }
+    .partner-row a { color: var(--rust); font-size: 12px; font-weight: 600; text-decoration: none; }
+
+    .form-message { min-height: 20px; margin: 8px 0 0; font-size: 13px; line-height: 1.5; }
+    .form-message.error { color: var(--error); }
+    .form-message.success { color: var(--success); }
+
+    .partner-type-badge { display: inline-block; padding: 4px 8px; background: var(--cream); font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">HABIBA CURTAINS</div>
+    <span class="badge">ADMIN TOOL</span>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <p>PARTNER ONBOARDING</p>
+      <h1>Add a <em>new partner.</em></h1>
+      <span>Create a branded catalogue for a furniture showroom, interior design firm, or retail partner. Takes about 2 minutes.</span>
+    </section>
+
+    <div class="steps">
+      <div class="step-indicator active" data-step="1"></div>
+      <div class="step-indicator" data-step="2"></div>
+      <div class="step-indicator" data-step="3"></div>
+      <div class="step-indicator" data-step="4"></div>
+    </div>
+
+    <form id="onboarding-form">
+      <!-- Step 1: Partner Details -->
+      <section class="form-section active" data-step="1">
+        <div class="card">
+          <div class="card-heading"><span>01</span><h2>Partner details</h2></div>
+          
+          <label for="partner-name">Partner name</label>
+          <input id="partner-name" type="text" required placeholder="e.g. Ararat Furniture" autocomplete="off">
+
+          <label for="partner-type">Partner type</label>
+          <select id="partner-type" required>
+            <option value="">Select type...</option>
+            <option value="furniture">Furniture showroom</option>
+            <option value="interior">Interior design firm</option>
+            <option value="design">Design studio</option>
+            <option value="hospitality">Hospitality venue</option>
+            <option value="retail">Retail partner</option>
+          </select>
+
+          <label>Partner URL slug</label>
+          <div class="slug-preview">curtains.app/<strong id="slug-preview">partner-name</strong>/</div>
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </section>
+
+      <!-- Step 2: Contact -->
+      <section class="form-section" data-step="2">
+        <div class="card">
+          <div class="card-heading"><span>02</span><h2>Contact information</h2></div>
+          
+          <div class="form-row">
+            <div>
+              <label for="phone">Phone number</label>
+              <input id="phone" type="tel" required placeholder="0960304444" autocomplete="off">
+            </div>
+            <div>
+              <label for="whatsapp">WhatsApp number <small>(optional)</small></label>
+              <input id="whatsapp" type="tel" placeholder="Same as phone if empty" autocomplete="off">
+            </div>
+          </div>
+
+          <label for="maps-url">Google Maps URL</label>
+          <input id="maps-url" type="url" required placeholder="https://maps.app.goo.gl/..." autocomplete="off">
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn-prev" onclick="prevStep()">← Back</button>
+          <button type="button" class="btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </section>
+
+      <!-- Step 3: Branding -->
+      <section class="form-section" data-step="3">
+        <div class="card">
+          <div class="card-heading"><span>03</span><h2>Branding</h2></div>
+          
+          <label>Partner logo</label>
+          <div class="logo-upload" id="logo-upload">
+            <input type="file" id="logo-file" accept="image/jpeg,image/png,image/webp">
+            <p>Drop logo here or click to upload<br><small>JPG, PNG, or WebP · Max 2MB</small></p>
+            <img class="logo-preview" id="logo-preview" alt="Logo preview" hidden>
+          </div>
+
+          <label for="brand-colour">Brand colour</label>
+          <div class="form-row">
+            <input id="brand-colour" type="color" value="#f1a900" required>
+            <input id="brand-hex" type="text" value="#f1a900" placeholder="#000000" required>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn-prev" onclick="prevStep()">← Back</button>
+          <button type="button" class="btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </section>
+
+      <!-- Step 4: Preview & Generate -->
+      <section class="form-section" data-step="4">
+        <div class="card">
+          <div class="card-heading"><span>04</span><h2>Preview & generate</h2></div>
+          
+          <div id="summary"></div>
+
+          <div class="preview-frame">
+            <iframe id="preview-iframe" title="Partner catalogue preview"></iframe>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn-prev" onclick="prevStep()">← Back</button>
+          <button type="button" class="btn-generate" id="generate-btn" onclick="generatePartner()">Generate partner catalogue</button>
+        </div>
+
+        <div class="form-message" id="form-message"></div>
+      </section>
+    </form>
+
+    <!-- Result -->
+    <section class="result" id="result-section" hidden>
+      <span>PARTNER CREATED</span>
+      <h2 id="result-name"></h2>
+      <p class="result-info" id="result-info"></p>
+      <div class="result-actions">
+        <button class="btn-download" id="download-qr-btn">Download QR code</button>
+        <button class="btn-copy" id="copy-url-btn">Copy catalogue URL</button>
+        <a class="btn-download" id="view-catalogue-btn" target="_blank">View live catalogue</a>
+      </div>
+    </section>
+
+    <!-- Existing Partners -->
+    <section class="partners-list" id="partners-list">
+      <h3>Existing partners</h3>
+      <div id="partners-container"></div>
+    </section>
+  </main>
+
+  <script src="partner-onboarding.js"></script>
+</body>
+</html>
