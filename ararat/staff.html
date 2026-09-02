@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f1a900">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Staff Pricing — Ararat Furniture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../staff.css">
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    :root { --gold: #f1a900; }
+    body { background: #f5f1ea; }
+    .staff-header { background: #1a1a2e; border-bottom: 3px solid var(--gold); }
+    .staff-brand { font: 600 12px "DM Sans", sans-serif; letter-spacing: .16em; color: white; }
+    .staff-badge { background: var(--gold); color: #1a1a2e; }
+    .staff-partner { font-size: 11px; color: rgba(255,255,255,.6); margin-left: 12px; }
+    .quote-shell { max-width: 600px; }
+    .calculate-button { background: var(--gold); color: #1a1a2e; }
+    .calculate-button:hover { background: #e09c00; }
+    .quote-result { border-color: var(--gold); }
+    .quote-result span { color: var(--gold); }
+    .back-link { display: block; text-align: center; margin-top: 24px; font-size: 12px; color: #888; }
+    .back-link a { color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
+    .back-link a:hover { border-color: var(--gold); }
+  </style>
+</head>
+<body>
+  <header class="staff-header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="staff-brand">STAFF PRICING TOOL</div>
+      <span class="staff-partner">Ararat Furniture</span>
+    </div>
+    <span class="staff-badge">STAFF ONLY</span>
+  </header>
+
+  <main class="quote-shell">
+    <section class="quote-intro">
+      <p>ARARAT FURNITURE</p>
+      <h1>Price a <em>window.</em></h1>
+      <span>Enter the finished window measurements. Pricing is calculated securely on the server.</span>
+    </section>
+
+    <form class="quote-form" novalidate>
+      <section class="quote-card access-card">
+        <div class="card-heading"><span>01</span><h2>Staff access</h2></div>
+        <label for="staff-code">Access code</label>
+        <input id="staff-code" name="staffCode" type="password" autocomplete="current-password" inputmode="numeric" required placeholder="Enter staff code">
+      </section>
+
+      <section class="quote-card">
+        <div class="card-heading"><span>02</span><h2>Fabric & size</h2></div>
+        <label for="fabric-search">Fabric</label>
+        <input id="fabric-search" name="fabricSearch" type="search" list="fabric-options" autocomplete="off" required placeholder="Search code or fabric name">
+        <datalist id="fabric-options">
+          <option value="HB-101 — Pearl Dust"></option>
+          <option value="HB-102 — Heritage Sand"></option>
+          <option value="HB-103 — Cloud Ivory"></option>
+          <option value="HB-104 — Ivory Relief"></option>
+          <option value="HB-105 — Silver Canvas"></option>
+          <option value="HB-106 — Warm Maize"></option>
+          <option value="HB-107 — Sage Bloom"></option>
+          <option value="HB-108 — Blue Nile Velvet"></option>
+          <option value="HB-109 — Moon Garden"></option>
+          <option value="HB-110 — Indigo Impression"></option>
+          <option value="HB-111 — Silver Bouclé"></option>
+          <option value="HB-112 — Dove Silk"></option>
+          <option value="HB-113 — Platinum Veil"></option>
+          <option value="HB-114 — Graphite Etching"></option>
+          <option value="HB-115 — Stone Relief"></option>
+          <option value="HB-116 — Soft Chalk"></option>
+          <option value="HB-117 — Charcoal Velvet"></option>
+          <option value="HB-118 — Oyster Satin"></option>
+          <option value="HB-119 — Lake Tana Lace"></option>
+          <option value="HB-120 — Frosted Pearl"></option>
+        </datalist>
+
+        <div class="measurement-grid">
+          <div><label for="width-cm">Width <small>CM</small></label><input id="width-cm" name="widthCm" type="number" inputmode="decimal" min="1" max="10000" step="0.1" required placeholder="0"></div>
+          <div><label for="height-cm">Height <small>CM</small></label><input id="height-cm" name="heightCm" type="number" inputmode="decimal" min="1" max="10000" step="0.1" required placeholder="0"></div>
+        </div>
+
+        <label for="quantity">Identical windows</label>
+        <div class="stepper">
+          <button type="button" data-step="-1" aria-label="Decrease quantity">−</button>
+          <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" max="500" step="1" value="1" required>
+          <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+        </div>
+      </section>
+
+      <button class="calculate-button" type="submit">Calculate price <span>→</span></button>
+      <p class="form-message" role="status" aria-live="polite"></p>
+
+      <section class="quote-result" aria-live="polite" hidden>
+        <span>ESTIMATED TOTAL</span>
+        <strong><b class="result-amount">—</b> <small>ETB</small></strong>
+        <p class="result-summary"></p>
+      </section>
+
+      <button class="reset-button" type="button">Reset / New quote</button>
+    </form>
+
+    <div class="back-link">
+      <a href="/ararat/">← Back to Ararat catalogue</a>
+    </div>
+  </main>
+
+  <script src="../staff.js"></script>
+</body>
+</html>

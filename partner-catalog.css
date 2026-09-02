@@ -98,6 +98,16 @@ button, input { font: inherit; color: inherit; }
 }
 .header-whatsapp:hover { background: var(--whatsapp-hover); }
 
+/* Staff nav link — subtle, for staff only */
+.staff-nav-link {
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: #bbb;
+  opacity: .5;
+  transition: opacity var(--transition);
+}
+.staff-nav-link:hover { opacity: 1; color: var(--ink); }
+
 /* ============================================
    Hero
    ============================================ */
