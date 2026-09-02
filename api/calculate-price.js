@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { supabase } = require('./db');
 
 const fabricIds = new Set(Array.from({ length: 20 }, (_, index) => `HB-${index + 101}`));
-const allowedFields = new Set(['fabricId', 'widthCm', 'heightCm', 'quantity', 'fabricMode', 'includeSewing', 'includeRail', 'includeBelts', 'includeHolders', 'includeInstallation']);
+const allowedFields = new Set(['fabricId', 'widthM', 'heightM', 'quantity', 'fabricMode', 'includeSewing', 'includeRail', 'includeBelts', 'includeHolders', 'includeInstallation']);
 
 function send(res, status, body) {
   res.setHeader('Cache-Control', 'no-store');
@@ -65,8 +65,8 @@ module.exports = function calculatePrice(req, res) {
 
   const fabricId = typeof body.fabricId === 'string' ? body.fabricId.toUpperCase() : '';
   if (!fabricIds.has(fabricId)) return send(res, 400, { message: 'Choose a valid Habiba fabric.' });
-  if (!finiteNumber(body.widthCm, 1, 10000) || !finiteNumber(body.heightCm, 1, 10000)) {
-    return send(res, 400, { message: 'Width and height must be between 1 and 10,000 cm.' });
+  if (!finiteNumber(body.widthM, 0.01, 100) || !finiteNumber(body.heightM, 0.01, 100)) {
+    return send(res, 400, { message: 'Width and height must be between 0.01 and 100 meters.' });
   }
   if (!Number.isInteger(body.quantity) || body.quantity < 1 || body.quantity > 500) {
     return send(res, 400, { message: 'Quantity must be a whole number between 1 and 500.' });
@@ -90,7 +90,7 @@ module.exports = function calculatePrice(req, res) {
   if (body.quantity > rules.projectWindowThreshold) {
     return send(res, 200, { projectRequired: true, reason: 'This order requires a project quotation.' });
   }
-  if (body.heightCm > rules.fabricWidthCm) {
+  if (body.heightM > rules.fabricWidthCm / 100) {
     return send(res, 200, { projectRequired: true, reason: 'This curtain height requires manual fabric planning.' });
   }
 
@@ -99,7 +99,7 @@ module.exports = function calculatePrice(req, res) {
     return send(res, 409, { message: 'This fabric has not been assigned a current price tier.' });
   }
 
-  const widthMeters = body.widthCm / 100;
+  const widthMeters = body.widthM;
   const fabricMeters = widthMeters * rules.fullnessPerLayer * body.quantity;
 
   const mainMeters = fabricMode === 'shear-only' ? 0 : fabricMeters;
@@ -124,8 +124,8 @@ module.exports = function calculatePrice(req, res) {
 
     supabase.from('quotes').insert({
       fabric_code: fabricId,
-      width_cm: body.widthCm,
-      height_cm: body.heightCm,
+      width_cm: body.widthM * 100,
+      height_cm: body.heightM * 100,
       quantity: body.quantity,
       total_price: total,
       currency: configuration.currency || 'ETB',

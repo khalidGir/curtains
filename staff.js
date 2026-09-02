@@ -1,8 +1,8 @@
 const quoteForm = document.querySelector('.quote-form');
 const staffCodeInput = document.querySelector('#staff-code');
 const fabricInput = document.querySelector('#fabric-search');
-const widthInput = document.querySelector('#width-cm');
-const heightInput = document.querySelector('#height-cm');
+const widthInput = document.querySelector('#width-m');
+const heightInput = document.querySelector('#height-m');
 const quantityInput = document.querySelector('#quantity');
 const calculateButton = document.querySelector('.calculate-button');
 const resetButton = document.querySelector('.reset-button');
@@ -92,8 +92,8 @@ quoteForm.addEventListener('submit', async event => {
       },
       body: JSON.stringify({
         fabricId,
-        widthCm: Number(widthInput.value),
-        heightCm: Number(heightInput.value),
+        widthM: Number(widthInput.value),
+        heightM: Number(heightInput.value),
         quantity: Number(quantityInput.value),
         fabricMode: selectedMode,
         includeSewing: toggles[0].checked,
@@ -132,7 +132,7 @@ quoteForm.addEventListener('submit', async event => {
     }
 
     const modeLabel = data.fabricMode === 'main-only' ? 'Main only' : data.fabricMode === 'shear-only' ? 'Sheer only' : 'Both layers';
-    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}`;
+    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} m · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}`;
     resultBreakdownArea.innerHTML = breakdownHtml;
     updatePartnerPrice();
     quoteResult.hidden = false;
