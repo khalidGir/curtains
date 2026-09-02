@@ -19,7 +19,11 @@ module.exports = async function handler(req, res) {
 }
 
 async function createQuote(req, res) {
-  const { fabric_code, width_cm, height_cm, quantity, partner_slug, staff_user_id } = req.body;
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Invalid JSON' }); }
+  }
+  const { fabric_code, width_cm, height_cm, quantity, partner_slug, staff_user_id } = body;
 
   if (!fabric_code || !width_cm || !height_cm || !quantity) {
     return res.status(400).json({ error: 'Missing required fields' });

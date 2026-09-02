@@ -6,7 +6,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { event_type, event_data, partner_slug } = req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Invalid JSON' }); }
+    }
+    const { event_type, event_data, partner_slug } = body;
 
     if (!event_type) {
       return res.status(400).json({ error: 'Missing event_type' });
