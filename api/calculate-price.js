@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { supabase } = require('./db');
 
 const fabricIds = new Set(Array.from({ length: 20 }, (_, index) => `HB-${index + 101}`));
-const allowedFields = new Set(['fabricId', 'widthCm', 'heightCm', 'quantity']);
+const allowedFields = new Set(['fabricId', 'widthCm', 'heightCm', 'quantity', 'fabricMode', 'includeSewing', 'includeRail', 'includeBelts', 'includeHolders', 'includeInstallation']);
 
 function send(res, status, body) {
   res.setHeader('Cache-Control', 'no-store');
@@ -72,6 +72,13 @@ module.exports = function calculatePrice(req, res) {
     return send(res, 400, { message: 'Quantity must be a whole number between 1 and 500.' });
   }
 
+  const fabricMode = body.fabricMode === 'main-only' || body.fabricMode === 'shear-only' ? body.fabricMode : 'both';
+  const includeSewing = body.includeSewing !== false;
+  const includeRail = body.includeRail !== false;
+  const includeBelts = body.includeBelts !== false;
+  const includeHolders = body.includeHolders !== false;
+  const includeInstallation = body.includeInstallation !== false;
+
   const rawPricingConfiguration = process.env.HABIBA_PRICING_CONFIG;
   if (!rawPricingConfiguration) {
     return send(res, 503, { message: 'Pricing is not configured yet. Add the approved Habiba pricing rules before quoting.' });
@@ -94,17 +101,20 @@ module.exports = function calculatePrice(req, res) {
   }
 
   const widthMeters = body.widthCm / 100;
-  const mainMeters = widthMeters * rules.fullnessPerLayer * body.quantity;
-  const sheerMeters = widthMeters * rules.fullnessPerLayer * body.quantity;
+  const fabricMeters = widthMeters * rules.fullnessPerLayer * body.quantity;
+
+  const mainMeters = fabricMode === 'shear-only' ? 0 : fabricMeters;
+  const sheerMeters = fabricMode === 'main-only' ? 0 : fabricMeters;
+  const mainRate = fabricMode === 'shear-only' ? rules.sheerRatePerMeter : configuration.tiers[tier];
   const totalFabricMeters = mainMeters + sheerMeters;
-  const installation = rules.installationBase + Math.max(0, body.quantity - rules.installationIncludedWindows) * rules.installationPerAdditionalWindow;
 
   const fabricCost = roundEtb(mainMeters * mainRate);
   const sheerCost = roundEtb(sheerMeters * rules.sheerRatePerMeter);
-  const sewingCost = roundEtb(totalFabricMeters * rules.sewingPerFabricMeter);
-  const railCost = roundEtb(widthMeters * body.quantity * rules.railPerMeter);
-  const beltsCost = roundEtb(body.quantity * rules.standardBeltsPerWindow);
-  const holdersCost = roundEtb(body.quantity * rules.beltHoldersPerWindow);
+  const sewingCost = includeSewing ? roundEtb(totalFabricMeters * rules.sewingPerFabricMeter) : 0;
+  const railCost = includeRail ? roundEtb(widthMeters * body.quantity * rules.railPerMeter) : 0;
+  const beltsCost = includeBelts ? roundEtb(body.quantity * rules.standardBeltsPerWindow) : 0;
+  const holdersCost = includeHolders ? roundEtb(body.quantity * rules.beltHoldersPerWindow) : 0;
+  const installation = includeInstallation ? rules.installationBase + Math.max(0, body.quantity - rules.installationIncludedWindows) * rules.installationPerAdditionalWindow : 0;
   const installCost = roundEtb(installation);
   const total = fabricCost + sheerCost + sewingCost + railCost + beltsCost + holdersCost + installCost;
 
@@ -130,15 +140,16 @@ module.exports = function calculatePrice(req, res) {
   return send(res, 200, {
     currency: configuration.currency || 'ETB',
     total,
+    fabricMode,
     projectRequired: false,
     breakdown: {
-      fabric: { label: 'Fabric (' + tier + ' @ ' + mainRate + '/m)', meters: mainMeters, cost: fabricCost },
-      sheer: { label: 'Sheer (@ ' + rules.sheerRatePerMeter + '/m)', meters: sheerMeters, cost: sheerCost },
-      sewing: { label: 'Sewing (@ ' + rules.sewingPerFabricMeter + '/m)', meters: totalFabricMeters, cost: sewingCost },
-      rail: { label: 'Rail', meters: widthMeters * body.quantity, cost: railCost },
-      belts: { label: 'Belts', count: body.quantity, cost: beltsCost },
-      holders: { label: 'Belt holders', count: body.quantity, cost: holdersCost },
-      installation: { label: 'Installation', cost: installCost }
+      ...(mainMeters > 0 && { fabric: { label: 'Fabric (' + tier + ' @ ' + mainRate + '/m)', meters: mainMeters, cost: fabricCost } }),
+      ...(sheerMeters > 0 && { sheer: { label: 'Sheer (@ ' + rules.sheerRatePerMeter + '/m)', meters: sheerMeters, cost: sheerCost } }),
+      ...(includeSewing && { sewing: { label: 'Sewing (@ ' + rules.sewingPerFabricMeter + '/m)', meters: totalFabricMeters, cost: sewingCost } }),
+      ...(includeRail && { rail: { label: 'Rail', meters: widthMeters * body.quantity, cost: railCost } }),
+      ...(includeBelts && { belts: { label: 'Belts', count: body.quantity, cost: beltsCost } }),
+      ...(includeHolders && { holders: { label: 'Belt holders', count: body.quantity, cost: holdersCost } }),
+      ...(includeInstallation && { installation: { label: 'Installation', cost: installCost } })
     }
   });
 };

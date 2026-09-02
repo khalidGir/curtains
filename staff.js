@@ -10,6 +10,9 @@ const formMessage = document.querySelector('.form-message');
 const quoteResult = document.querySelector('.quote-result');
 const resultAmount = document.querySelector('.result-amount');
 const resultSummary = document.querySelector('.result-summary');
+const modeButtons = document.querySelectorAll('[data-mode]');
+const toggles = document.querySelectorAll('[data-toggle]');
+let selectedMode = 'both';
 
 const fabricPattern = /^(HB-1(?:0[1-9]|1[0-9]|20))(?:\s+—.*)?$/i;
 
@@ -30,6 +33,14 @@ function changeQuantity(amount) {
 
 document.querySelectorAll('[data-step]').forEach(button => {
   button.addEventListener('click', () => changeQuantity(Number(button.dataset.step)));
+});
+
+modeButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    modeButtons.forEach(b => b.classList.remove('active'));
+    button.classList.add('active');
+    selectedMode = button.dataset.mode;
+  });
 });
 
 quoteForm.addEventListener('submit', async event => {
@@ -64,7 +75,13 @@ quoteForm.addEventListener('submit', async event => {
         fabricId,
         widthCm: Number(widthInput.value),
         heightCm: Number(heightInput.value),
-        quantity: Number(quantityInput.value)
+        quantity: Number(quantityInput.value),
+        fabricMode: selectedMode,
+        includeSewing: toggles[0].checked,
+        includeRail: toggles[1].checked,
+        includeBelts: toggles[2].checked,
+        includeHolders: toggles[3].checked,
+        includeInstallation: toggles[4].checked
       })
     });
     const data = await response.json().catch(() => ({}));
@@ -82,19 +99,20 @@ quoteForm.addEventListener('submit', async event => {
 
     let breakdownHtml = '';
     if (data.breakdown) {
-      const b = data.breakdown;
       breakdownHtml = '<div class="price-breakdown">';
-      breakdownHtml += `<div class="breakdown-row"><span>${b.fabric.label}</span><span>${b.fabric.meters.toFixed(1)}m × ${new Intl.NumberFormat('en-US').format(b.fabric.cost / b.fabric.meters)}/m</span><strong>${new Intl.NumberFormat('en-US').format(b.fabric.cost)}</strong></div>`;
-      breakdownHtml += `<div class="breakdown-row"><span>${b.sheer.label}</span><span>${b.sheer.meters.toFixed(1)}m</span><strong>${new Intl.NumberFormat('en-US').format(b.sheer.cost)}</strong></div>`;
-      breakdownHtml += `<div class="breakdown-row"><span>${b.sewing.label}</span><span>${b.sewing.meters.toFixed(1)}m</span><strong>${new Intl.NumberFormat('en-US').format(b.sewing.cost)}</strong></div>`;
-      breakdownHtml += `<div class="breakdown-row"><span>${b.rail.label}</span><span>${b.rail.meters.toFixed(1)}m</span><strong>${new Intl.NumberFormat('en-US').format(b.rail.cost)}</strong></div>`;
-      breakdownHtml += `<div class="breakdown-row"><span>${b.belts.label}</span><span>×${b.belts.count}</span><strong>${new Intl.NumberFormat('en-US').format(b.belts.cost)}</strong></div>`;
-      breakdownHtml += `<div class="breakdown-row"><span>${b.holders.label}</span><span>×${b.holders.count}</span><strong>${new Intl.NumberFormat('en-US').format(b.holders.cost)}</strong></div>`;
-      breakdownHtml += `<div class="breakdown-row"><span>${b.installation.label}</span><span></span><strong>${new Intl.NumberFormat('en-US').format(b.installation.cost)}</strong></div>`;
+      for (const [key, item] of Object.entries(data.breakdown)) {
+        const detail = item.meters !== undefined
+          ? `${item.meters.toFixed(1)}m`
+          : item.count !== undefined
+            ? `×${item.count}`
+            : '';
+        breakdownHtml += `<div class="breakdown-row"><span>${item.label}</span><span>${detail}</span><strong>${new Intl.NumberFormat('en-US').format(item.cost)}</strong></div>`;
+      }
       breakdownHtml += '</div>';
     }
 
-    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'}${breakdownHtml}`;
+    const modeLabel = data.fabricMode === 'main-only' ? 'Main only' : data.fabricMode === 'shear-only' ? 'Sheer only' : 'Both layers';
+    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}${breakdownHtml}`;
     quoteResult.hidden = false;
     setMessage('Price calculated securely.', true);
     quoteResult.scrollIntoView({ behavior: 'smooth', block: 'center' });

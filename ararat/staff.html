@@ -89,6 +89,24 @@
           <input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" max="500" step="1" value="1" required>
           <button type="button" data-step="1" aria-label="Increase quantity">+</button>
         </div>
+
+        <label>Fabric type</label>
+        <div class="fabric-mode-toggle">
+          <button type="button" class="mode-btn active" data-mode="both">Both layers</button>
+          <button type="button" class="mode-btn" data-mode="main-only">Main only</button>
+          <button type="button" class="mode-btn" data-mode="shear-only">Sheer only</button>
+        </div>
+      </section>
+
+      <section class="quote-card">
+        <div class="card-heading"><span>03</span><h2>Options</h2></div>
+        <div class="toggle-grid">
+          <label class="toggle-row"><input type="checkbox" checked data-toggle="sewing"><span>Sewing</span></label>
+          <label class="toggle-row"><input type="checkbox" checked data-toggle="rail"><span>Rail</span></label>
+          <label class="toggle-row"><input type="checkbox" checked data-toggle="belts"><span>Belts</span></label>
+          <label class="toggle-row"><input type="checkbox" checked data-toggle="holders"><span>Belt holders</span></label>
+          <label class="toggle-row"><input type="checkbox" checked data-toggle="installation"><span>Installation</span></label>
+        </div>
       </section>
 
       <button class="calculate-button" type="submit">Calculate price <span>→</span></button>
