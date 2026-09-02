@@ -98,15 +98,15 @@ module.exports = function calculatePrice(req, res) {
   const sheerMeters = widthMeters * rules.fullnessPerLayer * body.quantity;
   const totalFabricMeters = mainMeters + sheerMeters;
   const installation = rules.installationBase + Math.max(0, body.quantity - rules.installationIncludedWindows) * rules.installationPerAdditionalWindow;
-  const total = roundEtb(
-    mainMeters * mainRate +
-    sheerMeters * rules.sheerRatePerMeter +
-    totalFabricMeters * rules.sewingPerFabricMeter +
-    widthMeters * body.quantity * rules.railPerMeter +
-    body.quantity * rules.standardBeltsPerWindow +
-    body.quantity * rules.beltHoldersPerWindow +
-    installation
-  );
+
+  const fabricCost = roundEtb(mainMeters * mainRate);
+  const sheerCost = roundEtb(sheerMeters * rules.sheerRatePerMeter);
+  const sewingCost = roundEtb(totalFabricMeters * rules.sewingPerFabricMeter);
+  const railCost = roundEtb(widthMeters * body.quantity * rules.railPerMeter);
+  const beltsCost = roundEtb(body.quantity * rules.standardBeltsPerWindow);
+  const holdersCost = roundEtb(body.quantity * rules.beltHoldersPerWindow);
+  const installCost = roundEtb(installation);
+  const total = fabricCost + sheerCost + sewingCost + railCost + beltsCost + holdersCost + installCost;
 
   // Log quote to database (fire and forget)
   try {
@@ -127,5 +127,18 @@ module.exports = function calculatePrice(req, res) {
     // Silently fail - don't break pricing for analytics
   }
 
-  return send(res, 200, { currency: configuration.currency || 'ETB', total, projectRequired: false });
+  return send(res, 200, {
+    currency: configuration.currency || 'ETB',
+    total,
+    projectRequired: false,
+    breakdown: {
+      fabric: { label: 'Fabric (' + tier + ' @ ' + mainRate + '/m)', meters: mainMeters, cost: fabricCost },
+      sheer: { label: 'Sheer (@ ' + rules.sheerRatePerMeter + '/m)', meters: sheerMeters, cost: sheerCost },
+      sewing: { label: 'Sewing (@ ' + rules.sewingPerFabricMeter + '/m)', meters: totalFabricMeters, cost: sewingCost },
+      rail: { label: 'Rail', meters: widthMeters * body.quantity, cost: railCost },
+      belts: { label: 'Belts', count: body.quantity, cost: beltsCost },
+      holders: { label: 'Belt holders', count: body.quantity, cost: holdersCost },
+      installation: { label: 'Installation', cost: installCost }
+    }
+  });
 };

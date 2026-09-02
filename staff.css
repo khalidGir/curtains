@@ -75,3 +75,22 @@ input:focus { border-color: var(--rust); box-shadow: 0 0 0 3px rgba(159,84,56,.1
   .measurement-grid { gap: 8px; }
   input { padding: 0 12px; }
 }
+
+/* Price breakdown */
+.price-breakdown {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.15);
+  text-align: left;
+}
+.breakdown-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: #aaa397;
+}
+.breakdown-row span:first-child { color: #d4a48d; }
+.breakdown-row span:nth-child(2) { text-align: right; font-size: 11px; }
+.breakdown-row strong { color: var(--paper); font-weight: 500; text-align: right; }

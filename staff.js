@@ -79,7 +79,22 @@ quoteForm.addEventListener('submit', async event => {
       return;
     }
     resultAmount.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(data.total);
-    resultSummary.textContent = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'}`;
+
+    let breakdownHtml = '';
+    if (data.breakdown) {
+      const b = data.breakdown;
+      breakdownHtml = '<div class="price-breakdown">';
+      breakdownHtml += `<div class="breakdown-row"><span>${b.fabric.label}</span><span>${b.fabric.meters.toFixed(1)}m × ${new Intl.NumberFormat('en-US').format(b.fabric.cost / b.fabric.meters)}/m</span><strong>${new Intl.NumberFormat('en-US').format(b.fabric.cost)}</strong></div>`;
+      breakdownHtml += `<div class="breakdown-row"><span>${b.sheer.label}</span><span>${b.sheer.meters.toFixed(1)}m</span><strong>${new Intl.NumberFormat('en-US').format(b.sheer.cost)}</strong></div>`;
+      breakdownHtml += `<div class="breakdown-row"><span>${b.sewing.label}</span><span>${b.sewing.meters.toFixed(1)}m</span><strong>${new Intl.NumberFormat('en-US').format(b.sewing.cost)}</strong></div>`;
+      breakdownHtml += `<div class="breakdown-row"><span>${b.rail.label}</span><span>${b.rail.meters.toFixed(1)}m</span><strong>${new Intl.NumberFormat('en-US').format(b.rail.cost)}</strong></div>`;
+      breakdownHtml += `<div class="breakdown-row"><span>${b.belts.label}</span><span>×${b.belts.count}</span><strong>${new Intl.NumberFormat('en-US').format(b.belts.cost)}</strong></div>`;
+      breakdownHtml += `<div class="breakdown-row"><span>${b.holders.label}</span><span>×${b.holders.count}</span><strong>${new Intl.NumberFormat('en-US').format(b.holders.cost)}</strong></div>`;
+      breakdownHtml += `<div class="breakdown-row"><span>${b.installation.label}</span><span></span><strong>${new Intl.NumberFormat('en-US').format(b.installation.cost)}</strong></div>`;
+      breakdownHtml += '</div>';
+    }
+
+    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'}${breakdownHtml}`;
     quoteResult.hidden = false;
     setMessage('Price calculated securely.', true);
     quoteResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
