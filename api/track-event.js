@@ -24,8 +24,9 @@ module.exports = async function handler(req, res) {
     }
 
     // Hash IP for uniqueness
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-    const ip_hash = require('crypto').createHash('sha256').update(ip).digest('hex').slice(0, 16);
+    const crypto = require('crypto');
+    const ip = req.headers['x-forwarded-for'] || 'unknown';
+    const ip_hash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16);
 
     const { error } = await supabase
       .from('events')
