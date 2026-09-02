@@ -95,8 +95,7 @@ module.exports = function calculatePrice(req, res) {
   }
 
   const tier = configuration.fabricTiers[fabricId];
-  const mainRate = configuration.tiers[tier];
-  if (!tier || !finiteNumber(mainRate, 0, 1000000)) {
+  if (!tier || !finiteNumber(configuration.tiers[tier], 0, 1000000)) {
     return send(res, 409, { message: 'This fabric has not been assigned a current price tier.' });
   }
 
