@@ -41,6 +41,7 @@ label { display: flex; justify-content: space-between; margin: 0 0 9px; color: v
 label small { font-size: inherit; }
 input { width: 100%; min-height: 58px; margin: 0 0 22px; padding: 0 16px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font-size: 18px; outline: none; }
 input:focus { border-color: var(--rust); box-shadow: 0 0 0 3px rgba(159,84,56,.12); }
+input[type="search"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23756f65' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px; }
 .measurement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .measurement-grid input { font-size: 28px; font-weight: 500; }
 .stepper { display: grid; grid-template-columns: 58px 1fr 58px; }
@@ -80,28 +81,37 @@ input:focus { border-color: var(--rust); box-shadow: 0 0 0 3px rgba(159,84,56,.1
 .margin-input-group {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 8px;
+  overflow: hidden;
 }
 .margin-input {
-  width: 60px;
-  min-height: 32px;
-  padding: 0 8px;
-  border: 1px solid rgba(255,255,255,.25);
-  border-radius: 4px;
-  background: rgba(255,255,255,.08);
+  width: 56px;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--paper);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   text-align: center;
 }
 .margin-input:focus {
   outline: none;
-  border-color: var(--gold, #d4a48d);
-  box-shadow: 0 0 0 2px rgba(255,255,255,.1);
+  border: 0;
+  box-shadow: none;
+  background: rgba(255,255,255,.08);
 }
 .margin-symbol {
+  padding: 0 10px;
   color: #aaa397;
   font-size: 14px;
+  font-weight: 500;
+  border-left: 1px solid rgba(255,255,255,.12);
+  line-height: 36px;
 }
 .partner-final-price {
   margin: 8px 0 6px;
