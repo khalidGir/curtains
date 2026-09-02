@@ -59,6 +59,66 @@ input:focus { border-color: var(--rust); box-shadow: 0 0 0 3px rgba(159,84,56,.1
 .quote-result strong b { font-weight: 400; }
 .quote-result strong small { font: 14px var(--sans); letter-spacing: .12em; }
 .quote-result p { margin: 0; color: #aaa397; font-size: 12px; line-height: 1.6; }
+
+/* Partner price section */
+.partner-price-area {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid rgba(255,255,255,.15);
+}
+.partner-price-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.partner-price-header > span {
+  font-size: 9px;
+  letter-spacing: .18em;
+  color: var(--gold, #d4a48d);
+}
+.margin-input-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.margin-input {
+  width: 60px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 4px;
+  background: rgba(255,255,255,.08);
+  color: var(--paper);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+.margin-input:focus {
+  outline: none;
+  border-color: var(--gold, #d4a48d);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.1);
+}
+.margin-symbol {
+  color: #aaa397;
+  font-size: 14px;
+}
+.partner-final-price {
+  margin: 8px 0 6px;
+}
+.partner-final-price strong {
+  font-size: 42px;
+  color: var(--paper);
+}
+.partner-final-price small {
+  font-size: 14px;
+  color: #aaa397;
+  letter-spacing: .12em;
+}
+.partner-margin-detail {
+  font-size: 12px;
+  color: #aaa397;
+}
 .reset-button { background: transparent; border: 1px solid var(--line); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 
 @media (min-width: 700px) {

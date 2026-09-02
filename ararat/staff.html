@@ -23,6 +23,8 @@
     .calculate-button:hover { background: #e09c00; }
     .quote-result { border-color: var(--gold); }
     .quote-result span { color: var(--gold); }
+    .partner-price-header > span { color: var(--gold); }
+    .margin-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(241,169,0,.15); }
     .back-link { display: block; text-align: center; margin-top: 24px; font-size: 12px; color: #888; }
     .back-link a { color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
     .back-link a:hover { border-color: var(--gold); }
@@ -113,9 +115,24 @@
       <p class="form-message" role="status" aria-live="polite"></p>
 
       <section class="quote-result" aria-live="polite" hidden>
-        <span>ESTIMATED TOTAL</span>
+        <span>HABIBA BASE PRICE</span>
         <strong><b class="result-amount">—</b> <small>ETB</small></strong>
         <p class="result-summary"></p>
+        <div class="result-breakdown-area"></div>
+
+        <div class="partner-price-area">
+          <div class="partner-price-header">
+            <span>YOUR PRICE</span>
+            <div class="margin-input-group">
+              <input type="number" id="margin-percent" class="margin-input" min="0" max="500" step="1" value="0" placeholder="0">
+              <span class="margin-symbol">%</span>
+            </div>
+          </div>
+          <div class="partner-final-price">
+            <strong class="partner-amount">—</strong> <small>ETB</small>
+          </div>
+          <div class="partner-margin-detail"></div>
+        </div>
       </section>
 
       <button class="reset-button" type="button">Reset / New quote</button>

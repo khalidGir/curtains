@@ -91,12 +91,27 @@
       </section>
 
       <button class="calculate-button" type="submit">Calculate price <span>→</span></button>
-      <p class="form-message" role="status" aria-live="polite"></p>
+      <p class="form-message" role="status" aria-live="polote"></p>
 
       <section class="quote-result" aria-live="polite" hidden>
-        <span>ESTIMATED TOTAL</span>
+        <span>HABIBA BASE PRICE</span>
         <strong><b class="result-amount">—</b> <small>ETB</small></strong>
         <p class="result-summary"></p>
+        <div class="result-breakdown-area"></div>
+
+        <div class="partner-price-area">
+          <div class="partner-price-header">
+            <span>YOUR PRICE</span>
+            <div class="margin-input-group">
+              <input type="number" id="margin-percent" class="margin-input" min="0" max="500" step="1" value="0" placeholder="0">
+              <span class="margin-symbol">%</span>
+            </div>
+          </div>
+          <div class="partner-final-price">
+            <strong class="partner-amount">—</strong> <small>ETB</small>
+          </div>
+          <div class="partner-margin-detail"></div>
+        </div>
       </section>
 
       <button class="reset-button" type="button">Reset / New quote</button>

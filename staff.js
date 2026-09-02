@@ -10,9 +10,14 @@ const formMessage = document.querySelector('.form-message');
 const quoteResult = document.querySelector('.quote-result');
 const resultAmount = document.querySelector('.result-amount');
 const resultSummary = document.querySelector('.result-summary');
+const resultBreakdownArea = document.querySelector('.result-breakdown-area');
+const marginInput = document.querySelector('#margin-percent');
+const partnerAmount = document.querySelector('.partner-amount');
+const partnerMarginDetail = document.querySelector('.partner-margin-detail');
 const modeButtons = document.querySelectorAll('[data-mode]');
 const toggles = document.querySelectorAll('[data-toggle]');
 let selectedMode = 'both';
+let lastBaseTotal = 0;
 
 const fabricPattern = /^(HB-1(?:0[1-9]|1[0-9]|20))(?:\s+—.*)?$/i;
 
@@ -31,6 +36,18 @@ function changeQuantity(amount) {
   quantityInput.value = Math.min(500, Math.max(1, current + amount));
 }
 
+function updatePartnerPrice() {
+  const margin = Number.parseFloat(marginInput.value) || 0;
+  const partnerTotal = Math.round(lastBaseTotal * (1 + margin / 100));
+  const markup = partnerTotal - lastBaseTotal;
+  partnerAmount.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(partnerTotal);
+  if (margin > 0 && lastBaseTotal > 0) {
+    partnerMarginDetail.textContent = `+${new Intl.NumberFormat('en-US').format(markup)} ETB (${margin}%)`;
+  } else {
+    partnerMarginDetail.textContent = lastBaseTotal > 0 ? 'No markup applied' : '';
+  }
+}
+
 document.querySelectorAll('[data-step]').forEach(button => {
   button.addEventListener('click', () => changeQuantity(Number(button.dataset.step)));
 });
@@ -42,6 +59,8 @@ modeButtons.forEach(button => {
     selectedMode = button.dataset.mode;
   });
 });
+
+marginInput.addEventListener('input', updatePartnerPrice);
 
 quoteForm.addEventListener('submit', async event => {
   event.preventDefault();
@@ -96,6 +115,7 @@ quoteForm.addEventListener('submit', async event => {
       return;
     }
     resultAmount.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(data.total);
+    lastBaseTotal = data.total;
 
     let breakdownHtml = '';
     if (data.breakdown) {
@@ -112,7 +132,9 @@ quoteForm.addEventListener('submit', async event => {
     }
 
     const modeLabel = data.fabricMode === 'main-only' ? 'Main only' : data.fabricMode === 'shear-only' ? 'Sheer only' : 'Both layers';
-    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}${breakdownHtml}`;
+    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} cm · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}`;
+    resultBreakdownArea.innerHTML = breakdownHtml;
+    updatePartnerPrice();
     quoteResult.hidden = false;
     setMessage('Price calculated securely.', true);
     quoteResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -129,6 +151,8 @@ resetButton.addEventListener('click', () => {
   quoteForm.reset();
   staffCodeInput.value = retainedStaffCode;
   quantityInput.value = '1';
+  marginInput.value = '0';
+  lastBaseTotal = 0;
   quoteResult.hidden = true;
   setMessage('');
   fabricInput.focus();
