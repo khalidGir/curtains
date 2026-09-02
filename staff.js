@@ -1,6 +1,8 @@
 const quoteForm = document.querySelector('.quote-form');
 const staffCodeInput = document.querySelector('#staff-code');
 const fabricInput = document.querySelector('#fabric-search');
+const sheerFabricInput = document.querySelector('#sheer-fabric-search');
+const sheerFabricField = document.querySelector('.sheer-fabric-field');
 const widthInput = document.querySelector('#width-m');
 const heightInput = document.querySelector('#height-m');
 const quantityInput = document.querySelector('#quantity');
@@ -31,6 +33,17 @@ function readFabricId() {
   return match ? match[1].toUpperCase() : '';
 }
 
+function readSheerFabricId() {
+  const match = sheerFabricInput.value.trim().match(fabricPattern);
+  return match ? match[1].toUpperCase() : '';
+}
+
+function updateSheerField() {
+  const show = selectedMode === 'both' || selectedMode === 'shear-only';
+  sheerFabricField.hidden = !show;
+  sheerFabricInput.required = show;
+}
+
 function changeQuantity(amount) {
   const current = Number.parseInt(quantityInput.value, 10) || 1;
   quantityInput.value = Math.min(500, Math.max(1, current + amount));
@@ -57,6 +70,7 @@ modeButtons.forEach(button => {
     modeButtons.forEach(b => b.classList.remove('active'));
     button.classList.add('active');
     selectedMode = button.dataset.mode;
+    updateSheerField();
   });
 });
 
@@ -68,6 +82,7 @@ quoteForm.addEventListener('submit', async event => {
   quoteResult.hidden = true;
 
   const fabricId = readFabricId();
+  const sheerFabricId = readSheerFabricId();
   if (!staffCodeInput.value.trim()) {
     setMessage('Enter the staff access code.');
     staffCodeInput.focus();
@@ -76,6 +91,11 @@ quoteForm.addEventListener('submit', async event => {
   if (!fabricId) {
     setMessage('Choose a valid fabric from the list.');
     fabricInput.focus();
+    return;
+  }
+  if ((selectedMode === 'both' || selectedMode === 'shear-only') && !sheerFabricId) {
+    setMessage('Choose a sheer fabric.');
+    sheerFabricInput.focus();
     return;
   }
   if (!quoteForm.reportValidity()) return;
@@ -92,6 +112,7 @@ quoteForm.addEventListener('submit', async event => {
       },
       body: JSON.stringify({
         fabricId,
+        sheerFabricId: (selectedMode === 'both' || selectedMode === 'shear-only') ? sheerFabricId : '',
         widthM: Number(widthInput.value),
         heightM: Number(heightInput.value),
         quantity: Number(quantityInput.value),
@@ -132,7 +153,12 @@ quoteForm.addEventListener('submit', async event => {
     }
 
     const modeLabel = data.fabricMode === 'main-only' ? 'Main only' : data.fabricMode === 'shear-only' ? 'Sheer only' : 'Both layers';
-    resultSummary.innerHTML = `${fabricId} · ${widthInput.value} × ${heightInput.value} m · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}`;
+    const fabricLabel = data.fabricMode === 'both'
+      ? `${fabricId} + ${sheerFabricInput.value.trim().split(' — ')[0] || sheerFabricId}`
+      : data.fabricMode === 'shear-only'
+        ? sheerFabricId
+        : fabricId;
+    resultSummary.innerHTML = `${fabricLabel} · ${widthInput.value} × ${heightInput.value} m · ${quantityInput.value} window${Number(quantityInput.value) === 1 ? '' : 's'} · ${modeLabel}`;
     resultBreakdownArea.innerHTML = breakdownHtml;
     updatePartnerPrice();
     quoteResult.hidden = false;

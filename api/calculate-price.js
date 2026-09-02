@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { supabase } = require('./db');
 
 const fabricIds = new Set(Array.from({ length: 20 }, (_, index) => `HB-${index + 101}`));
-const allowedFields = new Set(['fabricId', 'widthM', 'heightM', 'quantity', 'fabricMode', 'includeSewing', 'includeRail', 'includeBelts', 'includeHolders', 'includeInstallation']);
+const allowedFields = new Set(['fabricId', 'sheerFabricId', 'widthM', 'heightM', 'quantity', 'fabricMode', 'includeSewing', 'includeRail', 'includeBelts', 'includeHolders', 'includeInstallation']);
 
 function send(res, status, body) {
   res.setHeader('Cache-Control', 'no-store');
@@ -99,16 +99,24 @@ module.exports = function calculatePrice(req, res) {
     return send(res, 409, { message: 'This fabric has not been assigned a current price tier.' });
   }
 
+  const sheerFabricId = typeof body.sheerFabricId === 'string' ? body.sheerFabricId.toUpperCase() : '';
+  const useSheer = fabricMode === 'both' || fabricMode === 'shear-only';
+  if (useSheer && sheerFabricId && !fabricIds.has(sheerFabricId)) {
+    return send(res, 400, { message: 'Invalid sheer fabric code.' });
+  }
+  const sheerTier = useSheer && sheerFabricId ? configuration.fabricTiers[sheerFabricId] : null;
+  const sheerRate = sheerTier ? configuration.tiers[sheerTier] : rules.sheerRatePerMeter;
+
   const widthMeters = body.widthM;
   const fabricMeters = widthMeters * rules.fullnessPerLayer * body.quantity;
 
   const mainMeters = fabricMode === 'shear-only' ? 0 : fabricMeters;
   const sheerMeters = fabricMode === 'main-only' ? 0 : fabricMeters;
-  const mainRate = fabricMode === 'shear-only' ? rules.sheerRatePerMeter : configuration.tiers[tier];
+  const mainRate = fabricMode === 'shear-only' ? sheerRate : configuration.tiers[tier];
   const totalFabricMeters = mainMeters + sheerMeters;
 
   const fabricCost = roundEtb(mainMeters * mainRate);
-  const sheerCost = roundEtb(sheerMeters * rules.sheerRatePerMeter);
+  const sheerCost = roundEtb(sheerMeters * sheerRate);
   const sewingCost = includeSewing ? roundEtb(totalFabricMeters * rules.sewingPerFabricMeter) : 0;
   const railCost = includeRail ? roundEtb(widthMeters * body.quantity * rules.railPerMeter) : 0;
   const beltsCost = includeBelts ? roundEtb(body.quantity * rules.standardBeltsPerWindow) : 0;
@@ -143,7 +151,7 @@ module.exports = function calculatePrice(req, res) {
     projectRequired: false,
     breakdown: {
       ...(mainMeters > 0 && { fabric: { label: 'Fabric (' + tier + ' @ ' + mainRate + '/m)', meters: mainMeters, cost: fabricCost } }),
-      ...(sheerMeters > 0 && { sheer: { label: 'Sheer (@ ' + rules.sheerRatePerMeter + '/m)', meters: sheerMeters, cost: sheerCost } }),
+      ...(sheerMeters > 0 && { sheer: { label: 'Sheer (' + (sheerTier ? sheerFabricId + ' @ ' + sheerRate : '@ ' + rules.sheerRatePerMeter) + '/m)', meters: sheerMeters, cost: sheerCost } }),
       ...(includeSewing && { sewing: { label: 'Sewing (@ ' + rules.sewingPerFabricMeter + '/m)', meters: totalFabricMeters, cost: sewingCost } }),
       ...(includeRail && { rail: { label: 'Rail', meters: widthMeters * body.quantity, cost: railCost } }),
       ...(includeBelts && { belts: { label: 'Belts', count: body.quantity, cost: beltsCost } }),
