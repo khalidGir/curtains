@@ -42,7 +42,7 @@ function render() {
     const searchMatch = !query || [fabric.code, fabric.en, fabric.am, fabric.collection, fabric.collectionAm, fabric.cat].join(' ').toLowerCase().includes(query);
     const name = localValue(fabric, 'name');
     const collection = localValue(fabric, 'collection');
-    return `<article class="fabric-card" data-index="${index}" tabindex="0"${filterMatch && searchMatch ? '' : ' hidden'}><div class="card-image"><img src="${imagePath(fabric.id)}" alt="${name} curtain fabric" width="720" height="960" loading="${index < 4 ? 'eager' : 'lazy'}" fetchpriority="${index < 4 ? 'high' : 'low'}" decoding="async"><span>${fabric.code}</span></div><div class="card-copy"><p>${collection}</p><h3>${name}</h3></div></article>`;
+    return `<article class="fabric-card" data-index="${index}" tabindex="0"${filterMatch && searchMatch ? '' : ' hidden'}><div class="fabric-card-image"><img src="${imagePath(fabric.id)}" alt="${name} curtain fabric" width="720" height="960" loading="${index < 4 ? 'eager' : 'lazy'}" fetchpriority="${index < 4 ? 'high' : 'low'}" decoding="async"></div><div class="fabric-card-info"><p class="fabric-card-code">${fabric.code} · ${collection}</p><h3 class="fabric-card-name">${name}</h3></div></article>`;
   }).join('');
   document.querySelectorAll('.fabric-card:not([hidden])').forEach(card => {
     card.addEventListener('click', () => openFabric(Number(card.dataset.index)));

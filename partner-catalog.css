@@ -346,8 +346,8 @@ button, input { font: inherit; color: inherit; }
 .partner-grid {
   padding: 60px 8vw;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
 }
 .fabric-card {
   cursor: pointer;
@@ -362,8 +362,9 @@ button, input { font: inherit; color: inherit; }
   box-shadow: 0 12px 32px rgba(36, 31, 26, .12);
 }
 .fabric-card-image {
-  aspect-ratio: 4/5;
+  aspect-ratio: 3/4;
   overflow: hidden;
+  background: #ece8e1;
 }
 .fabric-card-image img {
   width: 100%;
@@ -372,17 +373,20 @@ button, input { font: inherit; color: inherit; }
   transition: transform .5s ease;
 }
 .fabric-card:hover .fabric-card-image img { transform: scale(1.05); }
-.fabric-card-info { padding: 20px; }
+.fabric-card-info { padding: 16px 18px 18px; }
 .fabric-card-code {
   font-size: 10px;
   letter-spacing: .14em;
   color: var(--brown);
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .fabric-card-name {
   font: 500 16px var(--sans);
-  margin-top: 4px;
+  margin: 5px 0 0;
 }
 
 /* ============================================
@@ -687,7 +691,10 @@ footer small { font-size: 11px; color: #aaa; }
   .primary-button, .whatsapp-button { width: 100%; }
 
   .collection-intro { padding: 60px 5vw 40px; }
-  .partner-grid { padding: 40px 5vw; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .partner-grid { padding: 32px 5vw 48px; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fabric-card-info { padding: 13px 14px 15px; }
+  .fabric-card-name { font-size: 14px; }
+  .fabric-card-code { font-size: 9px; line-height: 1.45; }
   .ordering { padding: 60px 5vw; }
   .showroom-cta { padding: 60px 5vw; }
   .showroom-cta > div > div { flex-direction: column; align-items: flex-start; gap: 16px; }
