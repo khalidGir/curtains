@@ -590,6 +590,12 @@ footer small { font-size: 11px; color: #aaa; }
   width: 100%;
   margin-bottom: 12px;
 }
+.dialog-builder {
+  width: 100%;
+  margin-bottom: 12px;
+  background: var(--brown);
+  color: white;
+}
 .dialog-whatsapp {
   width: 100%;
   margin-bottom: 16px;
@@ -636,6 +642,10 @@ footer small { font-size: 11px; color: #aaa; }
 .mobile-actions a:nth-child(3) {
   background: var(--gold);
   color: var(--ink);
+}
+.mobile-actions a:nth-child(4) {
+  background: var(--brown);
+  color: white;
 }
 
 /* ============================================
@@ -715,7 +725,7 @@ footer small { font-size: 11px; color: #aaa; }
   /* Show fixed mobile bar */
   .mobile-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
   }
   /* Add padding to body so footer isn't hidden */
   body { padding-bottom: 66px; }

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Build a curtain design step by step.">
+  <title>Curtain Builder — Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="builder.css">
+</head>
+<body>
+  <header class="builder-header">
+    <a class="brand" href="../index.html" aria-label="Habiba Curtains home">HABIBA <span>CURTAINS</span></a>
+    <div class="header-copy"><span>GUIDED DESIGN</span><strong>Build your curtains</strong></div>
+    <button class="text-button" id="reset-builder" type="button">Start again</button>
+  </header>
+
+  <main class="builder-shell">
+    <nav class="step-navigation" aria-label="Curtain builder progress"></nav>
+
+    <section class="builder-stage" aria-live="polite">
+      <div class="step-panel" id="step-panel"></div>
+      <footer class="builder-actions">
+        <button class="secondary-button" id="back-button" type="button">← Back</button>
+        <p id="validation-message" role="status"></p>
+        <button class="primary-button" id="next-button" type="button">Continue →</button>
+      </footer>
+    </section>
+
+    <aside class="builder-aside">
+      <section class="preview-card" aria-label="Live curtain preview">
+        <div class="preview-heading"><span>LIVE PREVIEW</span><small>Updates as you choose</small></div>
+        <div class="preview-frame">
+          <img id="preview-image" src="../assets/images/catalog/HB-101-detail.webp" alt="Curtain fabric preview">
+          <div class="preview-shade"></div>
+          <div class="preview-badges" id="preview-badges"></div>
+          <span class="preview-note">Lightweight image preview</span>
+        </div>
+      </section>
+      <section class="running-summary">
+        <div class="summary-heading"><span>YOUR DESIGN</span><small id="saved-status">Saved on this device</small></div>
+        <div id="summary-list"></div>
+        <div class="price-placeholder"><span>ESTIMATED PRICE</span><strong>Added in the next phase</strong></div>
+      </section>
+    </aside>
+  </main>
+
+  <template id="option-template">
+    <button class="option-card" type="button">
+      <span class="option-visual" aria-hidden="true"></span>
+      <span class="option-copy"><strong></strong><small></small></span>
+      <span class="option-check">✓</span>
+    </button>
+  </template>
+
+  <script src="builder.js"></script>
+</body>
+</html>

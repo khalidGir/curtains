@@ -60,6 +60,8 @@ function openFabric(index) {
   dialog.querySelector('.dialog-description').textContent = localValue(fabric, 'desc');
   dialog.querySelector('.dialog-collection').textContent = localValue(fabric, 'collection');
   dialog.querySelector('.dialog-use').textContent = localValue(fabric, 'use');
+  const builderLink = dialog.querySelector('.dialog-builder');
+  if (builderLink) builderLink.href = `builder/?fabric=${encodeURIComponent(fabric.id)}`;
   dialog.showModal();
 }
 
