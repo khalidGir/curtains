@@ -55,11 +55,17 @@ const fabrics = [
   { id: 'HB-111', name: 'Silver Bouclé', colour: 'Textured grey', image: '/assets/images/catalog/HB-111-detail.webp' }
 ];
 
-const windowImages = {
-  standard: '/assets/images/builder/window-standard.webp',
-  sliding: '/assets/images/builder/window-sliding.webp',
-  bay: '/assets/images/builder/window-bay.webp',
-  corner: '/assets/images/builder/window-corner.webp'
+const optionImages = {
+  windowType: {
+    standard: '/assets/images/builder/window-standard.webp',
+    sliding: '/assets/images/builder/window-sliding.webp',
+    bay: '/assets/images/builder/window-bay.webp',
+    corner: '/assets/images/builder/window-corner.webp'
+  },
+  installation: {
+    full: '/assets/images/builder/installation-full.webp',
+    supply: '/assets/images/builder/installation-supply.webp'
+  }
 };
 
 const choiceImages = {
@@ -146,8 +152,8 @@ function labelFor(group, value) {
 function optionCards(group) {
   return `<div class="option-grid">${choices[group].map(([value, title, description]) => `
     <button class="option-card ${state[group] === value ? 'selected' : ''}" type="button" data-path="${group}" data-value="${value}">
-      ${group === 'windowType'
-        ? `<img class="option-photo" src="${windowImages[value]}" alt="" width="520" height="320" loading="${value === 'standard' || value === 'sliding' ? 'eager' : 'lazy'}" decoding="async">`
+      ${optionImages[group]
+        ? `<img class="option-photo" src="${optionImages[group][value]}" alt="" width="520" height="320" loading="${group === 'windowType' && (value === 'standard' || value === 'sliding') ? 'eager' : 'lazy'}" decoding="async">`
         : '<span class="option-visual" aria-hidden="true"></span>'}
       <span class="option-copy"><strong>${title}</strong><small>${description}</small></span>
       <span class="option-check">✓</span>
