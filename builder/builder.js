@@ -55,6 +55,31 @@ const fabrics = [
   { id: 'HB-111', name: 'Silver Bouclé', colour: 'Textured grey', image: '/assets/images/catalog/HB-111-detail.webp' }
 ];
 
+const windowImages = {
+  standard: '/assets/images/builder/window-standard.webp',
+  sliding: '/assets/images/builder/window-sliding.webp',
+  bay: '/assets/images/builder/window-bay.webp',
+  corner: '/assets/images/builder/window-corner.webp'
+};
+
+const choiceImages = {
+  treatment: {
+    single: '/assets/images/builder/treatment-single.webp',
+    layered: '/assets/images/builder/treatment-layered.webp',
+    sheer: '/assets/images/builder/treatment-sheer.webp'
+  },
+  hangingStyle: {
+    wave: '/assets/images/builder/style-wave.webp',
+    pinch: '/assets/images/builder/style-pinch.webp',
+    eyelet: '/assets/images/builder/style-eyelet.webp'
+  },
+  length: {
+    sill: '/assets/images/builder/length-sill.webp',
+    floor: '/assets/images/builder/length-floor.webp',
+    puddle: '/assets/images/builder/length-puddle.webp'
+  }
+};
+
 const panel = document.querySelector('#step-panel');
 const stepNavigation = document.querySelector('.step-navigation');
 const summaryList = document.querySelector('#summary-list');
@@ -121,7 +146,9 @@ function labelFor(group, value) {
 function optionCards(group) {
   return `<div class="option-grid">${choices[group].map(([value, title, description]) => `
     <button class="option-card ${state[group] === value ? 'selected' : ''}" type="button" data-path="${group}" data-value="${value}">
-      <span class="option-visual" aria-hidden="true"></span>
+      ${group === 'windowType'
+        ? `<img class="option-photo" src="${windowImages[value]}" alt="" width="520" height="320" loading="${value === 'standard' || value === 'sliding' ? 'eager' : 'lazy'}" decoding="async">`
+        : '<span class="option-visual" aria-hidden="true"></span>'}
       <span class="option-copy"><strong>${title}</strong><small>${description}</small></span>
       <span class="option-check">✓</span>
     </button>`).join('')}</div>`;
@@ -130,7 +157,9 @@ function optionCards(group) {
 function choiceGroup(group, title) {
   return `<section class="choice-group"><h2>${title}</h2><div class="choice-row">${choices[group].map(([value, name, description]) => `
     <button class="choice-chip ${state.design[group] === value ? 'selected' : ''}" type="button" data-path="design.${group}" data-value="${value}">
-      <strong>${name}</strong><small>${description}</small>
+      <img src="${choiceImages[group][value]}" alt="" width="420" height="250" loading="lazy" decoding="async">
+      <span class="choice-copy"><strong>${name}</strong><small>${description}</small></span>
+      <span class="choice-check" aria-hidden="true">✓</span>
     </button>`).join('')}</div></section>`;
 }
 
