@@ -49,11 +49,34 @@ const choices = {
 };
 
 const fabrics = [
-  { id: 'HB-101', name: 'Pearl Dust', colour: 'Soft neutral', image: '/assets/images/catalog/HB-101-detail.webp' },
-  { id: 'HB-102', name: 'Heritage Sand', colour: 'Warm pattern', image: '/assets/images/catalog/HB-102-detail.webp' },
-  { id: 'HB-108', name: 'Blue Nile Velvet', colour: 'Royal blue', image: '/assets/images/catalog/HB-108-detail.webp' },
-  { id: 'HB-111', name: 'Silver Bouclé', colour: 'Textured grey', image: '/assets/images/catalog/HB-111-detail.webp' }
-];
+  ['HB-101', 'Pearl Dust', 'Soft neutral', 'neutral'],
+  ['HB-102', 'Heritage Sand', 'Warm pattern', 'neutral pattern'],
+  ['HB-103', 'Cloud Ivory', 'Calm ivory', 'neutral'],
+  ['HB-104', 'Ivory Relief', 'Textured ivory', 'neutral'],
+  ['HB-105', 'Silver Canvas', 'Abstract silver', 'grey'],
+  ['HB-106', 'Warm Maize', 'Soft warm yellow', 'neutral'],
+  ['HB-107', 'Sage Bloom', 'Sage floral', 'pattern'],
+  ['HB-108', 'Royal Blue Velvet', 'Royal blue', 'blue'],
+  ['HB-109', 'Moon Garden', 'Silver pattern', 'grey pattern'],
+  ['HB-110', 'Indigo Impression', 'Indigo pattern', 'blue pattern'],
+  ['HB-111', 'Silver Bouclé', 'Textured grey', 'grey'],
+  ['HB-112', 'Dove Silk', 'Dove grey', 'grey'],
+  ['HB-113', 'Platinum Veil', 'Pale platinum', 'grey'],
+  ['HB-114', 'Graphite Etching', 'Deep graphite', 'grey'],
+  ['HB-115', 'Stone Relief', 'Stone texture', 'grey'],
+  ['HB-116', 'Soft Chalk', 'Chalk white', 'neutral'],
+  ['HB-117', 'Charcoal Velvet', 'Charcoal grey', 'grey'],
+  ['HB-118', 'Oyster Satin', 'Oyster neutral', 'neutral'],
+  ['HB-119', 'Botanical Lace', 'Blue botanical sheer', 'blue pattern'],
+  ['HB-120', 'Frosted Pearl', 'Pearl grey', 'grey']
+].map(([id, name, colour, categories]) => ({
+  id,
+  name,
+  colour,
+  categories,
+  thumb: `/assets/images/catalog/${id}-thumb.webp`,
+  image: `/assets/images/catalog/${id}-detail.webp`
+}));
 
 const optionImages = {
   windowType: {
@@ -173,9 +196,11 @@ function renderStep() {
   const step = state.currentStep;
   if (step === 1) panel.innerHTML = `<p class="step-kicker">STEP 1 OF 5 · WINDOW TYPE</p><h1>${steps[0].title}</h1><p class="step-intro">Choose the closest match. You can change this later without losing your other selections.</p>${optionCards('windowType')}`;
   if (step === 2) panel.innerHTML = `<p class="step-kicker">STEP 2 OF 5 · DESIGN</p><h1>${steps[1].title}</h1><p class="step-intro">Start with the feeling you want. These choices stay together as you compare fabrics.</p>${choiceGroup('treatment', 'Layers')}${choiceGroup('hangingStyle', 'Hanging style')}${choiceGroup('length', 'Finished length')}`;
-  if (step === 3) panel.innerHTML = `<p class="step-kicker">STEP 3 OF 5 · FABRIC & COLOUR</p><h1>${steps[2].title}</h1><p class="step-intro">These lightweight preview images swap instantly. They show colour and texture, not an exact room simulation.</p><div class="fabric-grid">${fabrics.map(fabric => `
-    <button class="fabric-option ${state.fabric?.id === fabric.id ? 'selected' : ''}" type="button" data-fabric="${fabric.id}">
-      <img src="${fabric.image}" alt="${fabric.name} fabric" width="720" height="960" loading="lazy"><span><strong>${fabric.name}</strong><small>${fabric.id} · ${fabric.colour}</small></span>
+  if (step === 3) panel.innerHTML = `<p class="step-kicker">STEP 3 OF 5 · FABRIC & COLOUR</p><h1>${steps[2].title}</h1><p class="step-intro">Search or filter all ${fabrics.length} fabrics. Thumbnails stay lightweight; the larger texture loads only after selection.</p>
+    <div class="fabric-tools"><label><span>Search fabrics</span><input id="fabric-search" type="search" placeholder="Name, code or colour" autocomplete="off"></label><div class="fabric-filters" role="group" aria-label="Filter fabrics">${['all', 'neutral', 'grey', 'blue', 'pattern'].map(filter => `<button type="button" data-fabric-filter="${filter}" class="${filter === 'all' ? 'active' : ''}">${filter[0].toUpperCase() + filter.slice(1)}</button>`).join('')}</div></div>
+    <p class="fabric-count" id="fabric-count">Showing all ${fabrics.length} fabrics</p><div class="fabric-grid">${fabrics.map((fabric, index) => `
+    <button class="fabric-option ${state.fabric?.id === fabric.id ? 'selected' : ''}" type="button" data-fabric="${fabric.id}" data-search="${`${fabric.id} ${fabric.name} ${fabric.colour}`.toLowerCase()}" data-categories="${fabric.categories}">
+      <img src="${fabric.thumb}" alt="${fabric.name} fabric" width="720" height="960" loading="${index < 4 ? 'eager' : 'lazy'}" decoding="async"><span><strong>${fabric.name}</strong><small>${fabric.id} · ${fabric.colour}</small></span>
     </button>`).join('')}</div>`;
   if (step === 4) panel.innerHTML = `<p class="step-kicker">STEP 4 OF 5 · INSTALLATION</p><h1>${steps[3].title}</h1><p class="step-intro">Choose the level of help you need. Pricing will be introduced only after this experience is approved.</p>${optionCards('installation')}`;
   if (step === 5) panel.innerHTML = `<p class="step-kicker">STEP 5 OF 5 · MEASUREMENTS</p><h1>${steps[4].title}</h1><p class="step-intro">Use metres. An approximate size is fine for this prototype; a professional measure can still be selected.</p>
@@ -242,6 +267,27 @@ function renderPreview() {
 function bindEvents() {
   panel.querySelectorAll('[data-path]').forEach(button => button.addEventListener('click', () => updateState(button.dataset.path, button.dataset.value)));
   panel.querySelectorAll('[data-fabric]').forEach(button => button.addEventListener('click', () => updateState('fabric', fabrics.find(fabric => fabric.id === button.dataset.fabric))));
+  const fabricSearch = panel.querySelector('#fabric-search');
+  const fabricFilters = panel.querySelectorAll('[data-fabric-filter]');
+  let activeFabricFilter = 'all';
+  const filterFabrics = () => {
+    const query = fabricSearch?.value.trim().toLowerCase() || '';
+    let visible = 0;
+    panel.querySelectorAll('[data-fabric]').forEach(button => {
+      const matchesQuery = !query || button.dataset.search.includes(query);
+      const matchesFilter = activeFabricFilter === 'all' || button.dataset.categories.split(' ').includes(activeFabricFilter);
+      button.hidden = !(matchesQuery && matchesFilter);
+      if (!button.hidden) visible += 1;
+    });
+    const count = panel.querySelector('#fabric-count');
+    if (count) count.textContent = visible === fabrics.length ? `Showing all ${fabrics.length} fabrics` : `${visible} fabric${visible === 1 ? '' : 's'} found`;
+  };
+  fabricSearch?.addEventListener('input', filterFabrics);
+  fabricFilters.forEach(button => button.addEventListener('click', () => {
+    activeFabricFilter = button.dataset.fabricFilter;
+    fabricFilters.forEach(item => item.classList.toggle('active', item === button));
+    filterFabrics();
+  }));
   panel.querySelectorAll('[data-edit]').forEach(button => button.addEventListener('click', () => goToStep(Number(button.dataset.edit))));
   ['width', 'height', 'quantity'].forEach(key => {
     const input = panel.querySelector(`#${key}`);

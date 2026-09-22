@@ -92,6 +92,14 @@ button { cursor: pointer; }
 .choice-chip.selected { border: 2px solid var(--rust); background: #fff7f2; color: var(--ink); }.choice-chip.selected .choice-copy { padding: 12px 13px 14px; }.choice-chip.selected small { color: var(--muted); }.choice-chip.selected .choice-check { display: grid; }
 
 .fabric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.fabric-tools { display: grid; grid-template-columns: minmax(190px, 1fr) auto; gap: 12px; align-items: end; margin-bottom: 10px; }
+.fabric-tools label span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.fabric-tools input { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); padding: 0 13px; outline: none; }
+.fabric-tools input:focus { border-color: var(--rust); }
+.fabric-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.fabric-filters button { min-height: 42px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); padding: 0 13px; font-size: 10px; }
+.fabric-filters button.active { border-color: var(--ink); background: var(--ink); color: white; }
+.fabric-count { margin: 0 0 13px; color: var(--muted); font-size: 11px; }
 .fabric-option { border: 1px solid var(--line); border-radius: 12px; padding: 0; background: var(--white); overflow: hidden; text-align: left; }
 .fabric-option img { display: block; width: 100%; height: clamp(150px, 18vw, 210px); object-fit: cover; }
 .fabric-option span { display: block; padding: 12px; }.fabric-option strong, .fabric-option small { display: block; }.fabric-option small { margin-top: 3px; color: var(--muted); }
@@ -150,5 +158,6 @@ button { cursor: pointer; }
   .builder-aside { grid-template-columns: 1fr; }.preview-frame { aspect-ratio: 4 / 5; }
   .review-item { grid-template-columns: 1fr auto; }.review-item span { grid-column: 1 / -1; }
   .fabric-grid { gap: 10px; }
+  .fabric-tools { grid-template-columns: 1fr; }
   .fabric-option img { height: 138px; }
 }
