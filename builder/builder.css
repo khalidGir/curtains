@@ -91,9 +91,9 @@ button { cursor: pointer; }
 .choice-check { position: absolute; top: 10px; right: 10px; width: 25px; height: 25px; display: none; place-items: center; border-radius: 50%; background: var(--rust); color: white; font-size: 12px; box-shadow: 0 3px 10px rgba(40,36,31,.2); }
 .choice-chip.selected { border: 2px solid var(--rust); background: #fff7f2; color: var(--ink); }.choice-chip.selected .choice-copy { padding: 12px 13px 14px; }.choice-chip.selected small { color: var(--muted); }.choice-chip.selected .choice-check { display: grid; }
 
-.fabric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.fabric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .fabric-option { border: 1px solid var(--line); border-radius: 12px; padding: 0; background: var(--white); overflow: hidden; text-align: left; }
-.fabric-option img { display: block; width: 100%; aspect-ratio: 1 / 1.2; object-fit: cover; }
+.fabric-option img { display: block; width: 100%; height: clamp(150px, 18vw, 210px); object-fit: cover; }
 .fabric-option span { display: block; padding: 12px; }.fabric-option strong, .fabric-option small { display: block; }.fabric-option small { margin-top: 3px; color: var(--muted); }
 .fabric-option.selected { outline: 3px solid var(--rust); outline-offset: -3px; }
 
@@ -149,4 +149,6 @@ button { cursor: pointer; }
   .builder-actions { grid-template-columns: 1fr 1fr; gap: 10px; }.builder-actions p { grid-column: 1 / -1; grid-row: 1; }.primary-button, .secondary-button { min-width: 0; }
   .builder-aside { grid-template-columns: 1fr; }.preview-frame { aspect-ratio: 4 / 5; }
   .review-item { grid-template-columns: 1fr auto; }.review-item span { grid-column: 1 / -1; }
+  .fabric-grid { gap: 10px; }
+  .fabric-option img { height: 138px; }
 }
