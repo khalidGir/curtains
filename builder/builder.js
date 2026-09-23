@@ -105,9 +105,9 @@ const choiceImages = {
     eyelet: '/assets/images/builder/style-eyelet.webp'
   },
   length: {
-    sill: '/assets/images/builder/length-sill.webp',
-    floor: '/assets/images/builder/length-floor.webp',
-    puddle: '/assets/images/builder/length-puddle.webp'
+    sill: '/assets/images/builder/length-sill-v2.webp',
+    floor: '/assets/images/builder/length-floor-v2.webp',
+    puddle: '/assets/images/builder/length-puddle-v2.webp'
   }
 };
 
